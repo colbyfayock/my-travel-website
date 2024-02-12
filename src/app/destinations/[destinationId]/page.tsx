@@ -2,8 +2,11 @@ import { redirect } from 'next/navigation';
 import { getCldImageUrl } from 'next-cloudinary';
 
 import Container from '@/components/Container';
+import CldVideoPlayer from '@/components/CldVideoPlayer';
 
 import destinations from '@/data/destinations.json';
+
+import 'next-cloudinary/dist/cld-video-player.css';
 
 export default async function Destination({ params }: { params: { destinationId: string; }}) {
   const destination = destinations.find(({ id }) => id === params.destinationId);
@@ -31,15 +34,22 @@ export default async function Destination({ params }: { params: { destinationId:
           <p>{ destination.description }</p>
         </div>
       </Container>
-      <Container className="mt-12">
-        <video
-          className="mx-auto"
-          width="640"
-          height="360"
-          src="/videos/beach_-_78287 (1080p).mp4"
-          controls
-        />
-      </Container>
+      {destination.video && (
+        <Container className="mt-12">
+          <CldVideoPlayer
+            id="destination-video"
+            className="mx-auto"
+            width="640"
+            height="360"
+            src={destination.video.publicId}
+            transformation={{
+              streaming_profile: 'hd',
+            }}
+            sourceTypes={['hls']}
+            controls
+          />
+        </Container>
+      )}
       <Container className="mt-12">
         <div className="prose-lg mx-auto">
           <div className="flex justify-between items-center">
