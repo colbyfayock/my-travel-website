@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getCldImageUrl } from 'next-cloudinary';
 
 import Container from '@/components/Container';
 
@@ -15,7 +16,12 @@ export default async function Destination({ params }: { params: { destinationId:
     <>
       <Container className="relative flex max-w-7xl items-center justify-center aspect-[3/1] bg-black">
         <span className="block absolute top-0 left-0 right-0 bottom-0 z-0 opacity-70 m-auto w-full h-full bg-no-repeat bg-center bg-cover" style={{
-          backgroundImage: `url(${destination.image.url})`
+          backgroundImage: `url(${getCldImageUrl({
+            src: destination.image.publicId,
+            width: 2560,
+            height: 854,
+            crop: 'fill'
+          })})`
         }} />
         <h1 className="relative z-10 text-white text-7xl uppercase font-black">{ destination.title }</h1>
       </Container>
