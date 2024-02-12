@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import Container from '@/components/Container';
+import CldImage from '@/components/CldImage';
 
 import destinations from '@/data/destinations.json';
 
@@ -13,10 +14,11 @@ export default function Home() {
           return (
             <li key={destination.id}>
               <Link className="relative group" href={`/destinations/${destination.id}`}>
-                <img
-                  src={destination.image.url}
+                <CldImage
+                  src={destination.image.publicId}
                   width={730}
                   height={900}
+                  crop="fill"
                   alt={destination.image.alt}
                 />
                 <div className="lg:opacity-0 lg:group-hover:opacity-100 transition-opacity absolute bottom-0 left-0 w-full bg-gradient-to-t from-zinc-900 px-5 py-4">
