@@ -1,12 +1,21 @@
 import { redirect } from 'next/navigation';
 import { getCldImageUrl } from 'next-cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 
 import Container from '@/components/Container';
 import CldVideoPlayer from '@/components/CldVideoPlayer';
+import CldUploadButton from '@/components/CldUploadButton';
+import CldImage from '@/components/CldImage';
 
 import destinations from '@/data/destinations.json';
 
 import 'next-cloudinary/dist/cld-video-player.css';
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export default async function Destination({ params }: { params: { destinationId: string; }}) {
   const destination = destinations.find(({ id }) => id === params.destinationId);
@@ -14,6 +23,9 @@ export default async function Destination({ params }: { params: { destinationId:
   if ( !destination ) {
     redirect('/404');
   }
+
+  const results = await cloudinary.search.expression(`folder=my-travel-website/uploads AND tags=destination-${destination.id}`).with_field('context').execute();
+  const { resources: travelerPhotos } = results || {};
 
   return (
     <>
@@ -54,17 +66,32 @@ export default async function Destination({ params }: { params: { destinationId:
         <div className="prose-lg mx-auto">
           <div className="flex justify-between items-center">
             <h2>Traveler&apos;s Photos</h2>
+            <CldUploadButton
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              uploadPreset="my-travel-website"
+              signatureEndpoint="/api/sign-cloudinary-params"
+              options={{
+                tags: ['traveler-photo', `destination-${destination.id}`],
+              }}
+            >
+              Add a Photo
+            </CldUploadButton>
           </div>
           <ul className="grid grid-cols-4 gap-2 p-0">
-            <li className="m-0 p-0">
-              <img
-                className="m-0"
-                src={destination.image.url}
-                width={destination.image.width}
-                height={destination.image.height}
-                alt=""
-              />
-            </li>
+            {travelerPhotos.map((photo: { public_id: string; }) => {
+              return (
+                <li className="m-0 p-0">
+                  <CldImage
+                    className="m-0"
+                    src={photo.public_id}
+                    width={526}
+                    height={526}
+                    crop="fill"
+                    alt=""
+                  />
+                </li>
+              )
+            })}
           </ul>
         </div>
       </Container>
