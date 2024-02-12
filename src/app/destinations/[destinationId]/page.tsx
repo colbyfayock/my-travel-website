@@ -122,22 +122,24 @@ export default async function Destination({ params }: { params: { destinationId:
               signatureEndpoint="/api/sign-cloudinary-params"
               options={{
                 tags: ['traveler-photo', `destination-${destination.id}`],
+                detection: 'captioning',
+                on_success: 'current_asset.update({ tags: [...e.upload_info.tags, "autocaption"], context: {caption: e.upload_info?.info?.detection?.captioning?.data?.caption} })'
               }}
             >
               Add a Photo
             </CldUploadButton>
           </div>
           <ul className="grid grid-cols-4 gap-2 p-0">
-            {travelerPhotos.map((photo: { public_id: string; }) => {
+            {travelerPhotos.map((photo: { public_id: string; context?: { caption: string; } }) => {
               return (
-                <li className="m-0 p-0">
+                <li key={photo.public_id} className="m-0 p-0">
                   <CldImage
                     className="m-0"
                     src={photo.public_id}
                     width={526}
                     height={526}
                     crop="fill"
-                    alt=""
+                    alt={photo.context?.caption || ''}
                   />
                 </li>
               )
