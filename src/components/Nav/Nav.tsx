@@ -14,7 +14,7 @@ const Nav = () => {
         </p>
         <ul className="flex justify-end align-center">
           <li>
-            <Link className="flex h-full items-center gap-2" href="/login">
+            <Link className="flex h-full items-center gap-2" href="https://github.com/colbyfayock/my-travel-website">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
